@@ -12,7 +12,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestions: QuizQuestion?
-    
+    private lazy var alertPresenter: AlertPresenter = {
+        return AlertPresenter(presentViewController: self)
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,10 +23,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         resetImageBorder()
         questionFactory?.requestNextQuestion()
         }
-        
-    
     // MARK: - QuestionFactoryDelegate
-    
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {
             return
@@ -97,22 +96,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
 
     private func show(quiz result: QuizResultsViewModel) {
-        let alert = UIAlertController(
-            title: result.title,
-            message: result.text,
-            preferredStyle: .alert)
+        let alertModel = AlertModel(title: result.title, message: result.text, buttonText: result.buttonText) { [weak self] in
+            guard let self = self else {return}
         
-        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
-            guard let self = self else { return }
-            
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
             self.shouldShowBorder = false
             self.resetImageBorder()
             self.questionFactory?.requestNextQuestion()
         }
-        alert.addAction(action)
-        self.present(alert, animated: true, completion: nil)
+        alertPresenter.presentAlert(with: alertModel)
     }
     
     private func resetImageBorder() {
