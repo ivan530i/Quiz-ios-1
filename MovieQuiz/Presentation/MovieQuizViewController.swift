@@ -5,11 +5,14 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet private var yesButton: UIButton!
+    @IBOutlet private var noButton: UIButton!
     
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
     private var shouldShowBorder = false
     private let questionsAmount: Int = 10
+    private var isAnswerProcessing = false
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestions: QuizQuestion?
     private lazy var alertPresenter: AlertPresenter = {
@@ -25,6 +28,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     // MARK: - QuestionFactoryDelegate
     func didReceiveNextQuestion(question: QuizQuestion?) {
+        isAnswerProcessing = false
         guard let question = question else {
             return
         }
@@ -36,19 +40,28 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
+    private func updateButtonState(isEnabled: Bool) {
+            DispatchQueue.main.async { [weak self] in
+                self?.yesButton.isEnabled = isEnabled
+                self?.noButton.isEnabled = isEnabled
+            }
+        }
+    
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion = currentQuestions else {
+        guard let currentQuestion = currentQuestions, !isAnswerProcessing else {
             return
         }
+        isAnswerProcessing = true
         let humanAnswer = true
         
         showAnswerResult(isCorrect: humanAnswer == currentQuestion.correctAnswer)
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion = currentQuestions else {
+        guard let currentQuestion = currentQuestions, !isAnswerProcessing else {
             return
         }
+        isAnswerProcessing = true
         let humanAnswer = false
         showAnswerResult(isCorrect: humanAnswer == currentQuestion.correctAnswer)
     }
