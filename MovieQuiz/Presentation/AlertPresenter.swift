@@ -1,26 +1,20 @@
-//
-//  AlertPresenter.swift
-//  MovieQuiz
-//
-//  Created by Иван on 12.02.2024.
-//
 
 import Foundation
 import UIKit
 
-class AlertPresenter {
+final class AlertPresenter {
     private weak var presentViewController : UIViewController?
     
     init(presentViewController: UIViewController?) {
         self.presentViewController = presentViewController
     }
     
-    func presentAlert(with model: AlertModel) {
+    func presentAlert(with model: AlertModel, extraInfo: String) {
         guard let presentViewController = presentViewController else {
             return
         }
         
-        let alert = UIAlertController(title: model.title, message: model.message, preferredStyle: .alert)
+        let alert = UIAlertController(title: model.title, message: model.message + extraInfo, preferredStyle: .alert)
         let action = UIAlertAction(title: model.buttonText, style: .default) { _ in
             model.completion?()
         }
