@@ -37,10 +37,10 @@ struct NetworkClient: NetworkRouting {
 struct StubNetworkClient: NetworkRouting {
     
     enum TestError: Error {
-    case test
+        case test
     }
     
-    let emulateError: Bool 
+    let emulateError: Bool
     
     func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void) {
         if emulateError {
