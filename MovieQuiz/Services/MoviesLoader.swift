@@ -5,9 +5,11 @@ protocol MoviesLoading {
 }
 
 struct MoviesLoader: MoviesLoading {
+    private let networkClient: NetworkRouting
     
-    private let networkClient = NetworkClient()
-    
+    init(networkClient: NetworkRouting = NetworkClient()) {
+        self.networkClient = networkClient
+    }
     
     private var mostPopularMoviesUrl: URL {
         guard let url = URL(string: "https://tv-api.com/en/API/Top250Movies/k_zcuw1ytf") else {
